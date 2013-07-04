@@ -1,0 +1,67 @@
+<?php
+/***********************************************
+-=Ms Site=-
+
+Модуль: Bill
+Автор: Миропольский Михаил <ms@ensk.ru>
+Имя файла: bill.class
+Дата создания: 25.04.2006
+Описание: Класс счетов
+***********************************************/
+require_once('utils/sql.class');
+
+class Bill extends Sql
+{
+
+	//конструктор
+	function Bill()
+	{
+		$this->SqlConnect();
+
+		$this->sqlQuery = 'CREATE TABLE IF NOT EXISTS bills(  id bigint(20) NOT NULL auto_increment,
+                                                              sid varchar(255) NOT NULL default "",
+															  date date NOT NULL default "0000-00-00",
+															  login varchar(255) NOT NULL default "",
+															  smi varchar(255) NOT NULL default "",
+															  width varchar(255) NOT NULL default "",
+															  height varchar(255) NOT NULL default "",
+															  area varchar(255) NOT NULL default "",
+															  num varchar(255) NOT NULL default "",
+															  summa varchar(255) NOT NULL default "",
+															  pay_date date NOT NULL default "0000-00-00",
+															  rubrik varchar(255) NOT NULL default "",
+															  info text NOT NULL,
+															  maketing varchar(255) NOT NULL default "",
+															  PRIMARY KEY id (id)
+						  									) TYPE=MyISAM;';
+		$this->SqlExecute();
+		return TRUE;
+	}
+
+    function BillGetBillInfo($sid)
+    {
+		$sid = $this->SqlPrepare($sid);
+		$info = array();
+		$this->sqlQuery = 'select * from bills where sid="' . $sid . '"';
+		$this->SqlExecute();
+        while ($row = mysql_fetch_array($this->sqlRes))
+        {
+            $info = $row;
+        }
+		return $info;
+    }
+/*
+	function BillGetUserBills($user)
+	{
+		$user = $this->SqlPrepare($user);
+		$info = array();
+		$this->sqlQuery = 'select * from bills where login="' . $user . '"';
+		$this->SqlExecute();
+        while ($row = mysql_fetch_array($this->sqlRes))
+        {
+            $info[$row['id']] = $row;
+        }
+		return $info;
+	}*/
+}
+?>

@@ -1,0 +1,59 @@
+<?php
+/***********************************************
+-=Ms Site=-
+
+Автор:    Миропольский Михаил <ms@ensk.ru>
+Описание: Класс утилит-конвертеров.
+***********************************************/
+
+class Convert
+{
+	function ConvertUser2Text($user)
+	{
+		$user = strip_tags($user);
+		$user = htmlspecialchars($user);
+		$user = explode('. ', $user);
+		$text = '';
+		foreach ($user as $key => $value)
+		{
+			$value = strtolower($value);
+			$value = ucfirst($value);
+			$text .= $value . '. ';
+		}
+		$text = substr($text, 0, -2);
+		$text = nl2br($text);
+		$text = trim($text);
+
+		return $text;
+	}
+
+	//search
+	function ConvertHtml2Text($html)
+	{
+		$text = preg_replace('/<style.*style>/s', ' ', $html);
+		$text = preg_replace('/<span style=\".*\"><\/span>/sU', ' ', $text);
+		$text = preg_replace('/<br.*>/sU', ' ', $text);
+		$text = strip_tags($text);
+		$text = htmlspecialchars($text);
+		$text = str_replace('\n', ' ', $text);
+		$text = str_replace('\r', ' ', $text);
+		$text = trim($text);
+		$text = ( strstr($text, 'Fatal error') ) ? '' : $text;
+		$text = ( strstr($text, 'Warning') ) ? '' : $text;
+		$text = html_entity_decode($text);
+		
+		return $text;
+	}
+
+	function ConvertString2Array($string, $num)
+	{
+		$temp = $string;
+		for ($i = 0; $i < strlen($string)/$num; $i++)
+		{
+			$string_array[$i]=substr($temp, 0, $num);
+			$temp = substr($temp, $num);
+		}
+		return $string_array;
+	}
+}
+?>

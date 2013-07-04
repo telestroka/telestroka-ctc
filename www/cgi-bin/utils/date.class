@@ -1,0 +1,93 @@
+<?php
+/***********************************************
+-=Ms Site=-
+
+Автор:    Миропольский Михаил <ms@ensk.ru>
+Описание: Класс утилит для работы с датами.
+***********************************************/
+
+class Date
+{
+	var	$dateDayNumbers = array();
+	var	$dateMonthesOf = array(
+						  		'',
+								'января',
+								'февраля',
+								'марта',
+								'апреля',
+								'мая',
+								'июня',
+								'июля',
+								'августа',
+								'сентября',
+								'октября',
+								'ноября',
+								'декабря'
+								);
+
+	var	$dateDays = array(
+						  		'',
+								'понедельник',
+								'вторник',
+								'среда',
+								'четверг',
+								'пятница',
+								'суббота',
+								'воскресенье'
+								);
+
+	function DateGetDayNumbers()
+	{
+		for ($i = 1; $i < 10; $i++) $this->dateDayNumbers[$i] = '0' . $i;
+		for ($i = 10; $i < 32; $i++) $this->dateDayNumbers[$i] = $i;
+		return TRUE;
+	}
+
+	function DateToday()
+	{
+		return date('Y-m-d');
+	}
+
+	function DateConvertSeconds2Sql($seconds)
+	{
+		$day = strftime('%d', $seconds);
+		$day = round($day);
+		$month = strftime('%m', $seconds);
+		$month = round($month);
+		$year = strftime('%Y', $seconds);
+		$date = $year . '-' . $month . '-' . $day;
+
+		return $date;
+	}
+
+    function DateConvertSql2Date($sql)
+    {
+      $date = explode('-', $sql);
+      $date = $date[2] . '.' . $date[1] . '.' . $date[0];
+      if ($date == '00.00.0000') $date = "";
+      return $date;
+    }
+
+    function DateConvertSql2TextDate($sql)
+    {
+      $date = explode('-', $sql);
+	  $month = round($date[1]);
+	  $month = $this->dateMonthesOf[$month];
+
+      $date = $date[2] . ' ' . $month . ' ' . $date[0];
+      if ($date == '00.00.0000') $date = "";
+      return $date;
+    }
+
+	function DateOfFile($path)
+	{
+		if ( file_exists($path) )
+		{
+			$date = filemtime($path);
+			$date = $this->DateConvertSeconds2Sql($date);
+			return $date;
+		}
+		return FALSE;
+	}
+}
+?>

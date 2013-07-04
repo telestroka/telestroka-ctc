@@ -1,0 +1,54 @@
+<?php
+/***********************************************
+-=Ms Site=-
+
+Автор:    Миропольский Михаил <ms@ensk.ru>
+Описание: Класс утилит для работы с графикой.
+***********************************************/
+require_once('fs.class');
+
+class Image extends Fs
+{
+	function ImageDie()
+	{
+		exit('Произошла внутренняя ошибка. Ошибка работы с изображением.');
+	}
+
+    function ImageCreatePreview($src, $dest, $imageMaxSize)
+    {
+        $image_format = $this->FsGetType($src);
+        if (!$image_format) $this->ImageDie();
+
+        if ( $image_format == 'gif' ) $image_resource = imagecreatefromgif($src);
+        if ( $image_format == 'jpg' ) $image_resource = imagecreatefromjpeg($src);
+        if ( $image_format == 'png' ) $image_resource = imagecreatefrompng($src);
+
+        $image2_width = $image_width = imagesx($image_resource);
+        $image2_height = $image_height = imagesy($image_resource);
+
+        if ($image_width > $imageMaxSize || $image_height > $imageMaxSize)
+        {
+          if  ($image_height > $image_width) //если картинка вертикальная
+          {
+              $image2_height = $imageMaxSize;
+              $image2_width = $image_width * $imageMaxSize / $image_height;
+          }
+          else  //если картинка горизонтальная
+          {
+              $image2_width = $imageMaxSize;
+              $image2_height = $image_height * $imageMaxSize / $image_width;
+          }
+        }
+
+        $image2_resource = imagecreatetruecolor($image2_width, $image2_height);
+        imagecopyresampled ($image2_resource, $image_resource, 0, 0, 0, 0, $image2_width, $image2_height, $image_width, $image_height);
+
+        if ( $image_format == 'gif' ) imagegif($image2_resource, $dest);
+        if ( $image_format == 'jpg' ) imagejpeg($image2_resource, $dest);
+        if ( $image_format == 'png' ) imagepng($image2_resource, $dest);
+
+        imagedestroy($image_resource);
+        imagedestroy($image2_resource);
+    }
+}
+?>

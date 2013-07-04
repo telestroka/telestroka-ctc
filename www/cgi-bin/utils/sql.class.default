@@ -1,0 +1,454 @@
+<?php
+/***********************************************
+-=Ms Site=-
+
+Автор: Курепин Руслан <atos@21.ru>, Миропольский Михаил
+Описание: Класс для работы с базой данных
+***********************************************/
+
+class Sql
+{
+	var $sqlLogin = '';
+	var	$sqlPasswd = '';
+	var	$sqlDatabase = '';
+	var	$sqlHost = '';
+
+	var	$sqlQuery;
+	var	$sqlErr;
+	var	$sqlRes = '';
+
+	function SqlDie($error)
+	{
+		exit('Произошла внутренняя ошибка. Ошибка при работе с базой данных.');
+		exit ($error);
+	}
+
+	function SqlConnect()
+	{
+		$this->connId = mysql_connect($this->sqlHost, $this->sqlLogin, $this->sqlPasswd);
+		if (!$this->connId) $this->SqlDie('could not connect to database');
+		
+		$this->sqlQuery = 'CREATE DATABASE IF NOT EXISTS `' . $this->sqlDatabase . '`';
+		$this->SqlExecute();
+
+		$result = mysql_select_db($this->sqlDatabase);
+		if (!$result) $this->SqlDie('could not select database');
+	}
+
+	function SqlExecute()
+	{
+		$this->sqlRes = mysql_query($this->sqlQuery, $this->connId);
+		$this->sqlErr = mysql_error();
+		if ($this->sqlErr) $this->SqlDie($this->sqlErr);
+	}
+
+	function SqlClose()
+	{
+		mysql_close($this->connId);
+	}
+
+	function SqlPrepare($string)
+	{
+		$string = strip_tags($string);
+		$string = mysql_real_escape_string($string);
+		//$string=addCslashes($string, '%_');
+		return $string;
+	}
+
+	function SqlPrepareHtml($string)
+	{
+		$string = mysql_real_escape_string($string);
+		return $string;
+	}
+
+//Информация об объектах
+
+	//Информация о единичном объекте
+	function SqlGetObj($id, $table)
+	{
+		$id = $this->SqlPrepare($id);
+		$table = $this->SqlPrepare($table);
+		$item_info = array();
+		$this->sqlQuery = 'select * from ' . $table . ' where id = "' . $id . '" order by id';
+		$this->SqlExecute();
+    $item_info = mysql_fetch_array($this->sqlRes);
+		return $item_info;
+	}
+	
+	//Вся база
+	function SqlGetTable($table)
+	{
+		$table = $this->SqlPrepare($table);
+		$table_info = array();
+		$this->sqlQuery = 'select * from ' . $table . ' order by id';
+		$this->SqlExecute();
+        while ($row = mysql_fetch_array($this->sqlRes))
+        {
+            $table_info[$row['id']] = $row;
+        }
+		return $table_info;
+	}
+	
+	function SqlGetReverseTable($table)
+	{
+		$table = $this->SqlPrepare($table);
+		$table_info = array();
+		$this->sqlQuery = 'select * from ' . $table . ' order by id desc';
+		$this->SqlExecute();
+        while ($row = mysql_fetch_array($this->sqlRes))
+        {
+            $table_info[$row['id']] = $row;
+        }
+		return $table_info;
+	}
+	
+	function SqlGetTableCustom($table, $query)
+	{
+		$table = $this->SqlPrepare($table);
+		//$query = $this->SqlPrepare($query);
+
+		$items_info = array();
+		$this->sqlQuery = 'select * from ' . $table . ' ' . $query;
+		$this->SqlExecute();
+        while ($row = mysql_fetch_array($this->sqlRes))
+        {
+            $items_info[$row['id']] = $row;
+        }
+		return $items_info;
+	}
+	
+	//Информация о секторах
+	function SqlGetPartObjects($id, $table)
+	{
+		$id = $this->SqlPrepare($id);
+		$table = $this->SqlPrepare($table);
+		$items_info = array();
+		$this->sqlQuery = 'select * from ' . $table . ' where part = "' . $id . '" order by id';
+		$this->SqlExecute();
+	    while ($row = mysql_fetch_array($this->sqlRes))
+	    {
+	        $items_info[$row['id']] = $row;
+	    }
+		return $items_info;
+	}
+	
+	function SqlGetPartObjectsNum($id, $table)
+	{
+		$table = $this->SqlPrepare($table);
+		$id = $this->SqlPrepare($id);
+
+		$items_info = array();
+		$this->sqlQuery = 'select * from ' . $table . ' where part = "' . $id . '" order by id';
+		$this->SqlExecute();
+		return mysql_num_rows($this->sqlRes);
+	}
+	
+	//Информация о разделах
+	function SqlGetSectObjects($id, $table)
+	{
+		$id = $this->SqlPrepare($id);
+		$table = $this->SqlPrepare($table);
+		$items_info = array();
+		$this->sqlQuery = 'select * from ' . $table . ' where sect = "' . $id . '" order by id';
+		$this->SqlExecute();
+	    while ($row = mysql_fetch_array($this->sqlRes))
+	    {
+	        $items_info[$row['id']] = $row;
+	    }
+		return $items_info;
+	}
+	
+	function SqlGetSectObjectsNum($id, $table)
+	{
+		$table = $this->SqlPrepare($table);
+		$id = $this->SqlPrepare($id);
+
+		$items_info = array();
+		$this->sqlQuery = 'select * from ' . $table . ' where sect = "' . $id . '" order by id';
+		$this->SqlExecute();
+		return mysql_num_rows($this->sqlRes);
+	}
+
+	//Информация о рубриках
+	function SqlGetCatObjects($id, $table)
+	{
+		$id = $this->SqlPrepare($id);
+		$table = $this->SqlPrepare($table);
+		$items_info = array();
+		$this->sqlQuery = 'select * from ' . $table . ' where cat = "' . $id . '" order by id';
+		$this->SqlExecute();
+	    while ($row = mysql_fetch_array($this->sqlRes))
+	    {
+	        $items_info[$row['id']] = $row;
+	    }
+			return $items_info;
+	}
+	
+	function SqlGetCatObjectsNum($id, $table)
+	{
+		$table = $this->SqlPrepare($table);
+		$id = $this->SqlPrepare($id);
+
+		$items_info = array();
+		$this->sqlQuery = 'select * from ' . $table . ' where cat = "' . $id . '" order by id';
+		$this->SqlExecute();
+		return mysql_num_rows($this->sqlRes);
+	}
+
+	//Информация об объектах
+	function SqlGetItemObjects($id, $table)
+	{
+		$id = $this->SqlPrepare($id);
+		$table = $this->SqlPrepare($table);
+		$items_info = array();
+		$this->sqlQuery = 'select * from ' . $table . ' where item = "' . $id . '" order by id';
+		$this->SqlExecute();
+	    while ($row = mysql_fetch_array($this->sqlRes))
+	    {
+	        $items_info[$row['id']] = $row;
+	    }
+			return $items_info;
+	}
+	
+	function SqlGetItemObjectsNum($id, $table)
+	{
+		$table = $this->SqlPrepare($table);
+		$id = $this->SqlPrepare($id);
+
+		$items_info = array();
+		$this->sqlQuery = 'select * from ' . $table . ' where item = "' . $id . '" order by id';
+		$this->SqlExecute();
+		return mysql_num_rows($this->sqlRes);
+	}
+
+	function SqlGetTableLastObjects($num, $table)
+	{
+		//$table = $this->SqlPrepare($table);
+		$num = $this->SqlPrepare($num);
+
+		$items_info = array();
+		$this->sqlQuery = 'select * from ' . $table . ' order by id desc limit 0,' . $num;
+		$this->SqlExecute();
+        while ($row = mysql_fetch_array($this->sqlRes))
+        {
+            $items_info[$row['id']] = $row;
+        }
+		return $items_info;
+	}
+
+	//Информация об объекте по названию
+	function SqlGetItemByTitle($title, $module)
+	{
+		$title = $this->SqlPrepare($title);
+		$module = $this->SqlPrepare($module);
+		$info = array();
+		$this->sqlQuery = 'select * from ' . $module . ' where title = "' . $title . '"';
+		$this->SqlExecute();
+        $info = mysql_fetch_array($this->sqlRes);
+		return $info;
+	}
+
+    //количество одноименных картинок в базе
+	function SqlCountImages($image, $table)
+	{
+		$image = $this->SqlPrepare($image);
+		$table = $this->SqlPrepare($table);
+		$this->sqlQuery = 'select id from ' . $table . ' where image = "' . $image . '"';
+		$this->SqlExecute();
+		return mysql_num_rows($this->sqlRes);
+	}
+
+//Проверки
+
+	function SqlIsExist($id, $table)
+	{
+		$id = $this->SqlPrepare($id);
+		$table = $this->SqlPrepare($table);
+		$this->sqlQuery = 'select id from ' . $table . ' where id = "' . $id . '"';
+		$this->SqlExecute();
+		return mysql_num_rows($this->sqlRes) ? TRUE : FALSE;
+	}
+
+	function SqlIsExistTitle($title, $module)
+	{
+		$title = $this->SqlPrepare($title);
+		$module = $this->SqlPrepare($module);
+		$this->sqlQuery = 'select id from ' . $module . ' where title = "' . $title . '"';
+		$this->SqlExecute();
+		return mysql_num_rows($this->sqlRes) ? TRUE : FALSE;
+	}
+
+	function SqlIsAccessible($id, $table)
+	{
+		$id = $this->SqlPrepare($id);
+		$table = $this->SqlPrepare($table);
+		$this->sqlQuery = 'select access from ' . $table . ' where id = "' . $id . '"';
+		$this->SqlExecute();
+		$row = mysql_fetch_array($this->sqlRes);
+		return ( $row['access'] == '1' ) ? TRUE : FALSE;
+	}
+	
+//Добавление в базу
+	function SqlAdd($info, $table)
+	{
+		$table = $this->SqlPrepare($table);
+
+		$field_names = '';
+		$field_values = '';
+
+		foreach ($info as $info_id => $info_value)
+		{			
+			$info_id = $this->SqlPrepare($info_id);
+			$info_value = $this->SqlPrepare($info_value);
+			$info_value = str_replace('\n', '<br\>', $info_value);
+			$field_names .= $info_id . ', ';
+			$field_values .= '"' . $info_value . '", ';
+		}
+		$field_names = substr($field_names, 0, strlen($field_names)-2);
+		$field_values = substr($field_values, 0, strlen($field_values)-2);
+
+		$this->sqlQuery='INSERT INTO ' . $table . ' (' . $field_names . ') VALUES (' . $field_values . ')';
+		$this->SqlExecute();
+
+		return TRUE;
+	}
+	
+	function SqlAddHtml($info, $table)
+	{
+		$table = $this->SqlPrepareHtml($table);
+
+		$field_names = '';
+		$field_values = '';
+
+		foreach ($info as $info_id => $info_value)
+		{
+			$info_id = $this->SqlPrepareHtml($info_id);
+			$info_value = $this->SqlPrepareHtml($info_value);
+			$field_names .= $info_id . ', ';
+			$field_values .= '"' . $info_value . '", ';
+		}
+		$field_names = substr($field_names, 0, strlen($field_names)-2);
+		$field_values = substr($field_values, 0, strlen($field_values)-2);
+
+		$this->sqlQuery='INSERT INTO ' . $table . ' (' . $field_names . ') VALUES (' . $field_values . ')';
+		$this->SqlExecute();
+
+		return TRUE;
+	}
+
+
+//Обновление поля
+	function SqlUpdate($id, $info, $table)
+	{
+		$id = $this->SqlPrepare($id);
+		$table = $this->SqlPrepare($table);
+
+		$field_values = '';
+
+		foreach ($info as $info_id => $info_value)
+		{
+			$info_id = $this->SqlPrepare($info_id);
+			$info_value = $this->SqlPrepare($info_value);
+			$info_value = str_replace('\n', '<br\>', $info_value);
+			$field_values .= $info_id . '= "' . $info_value . '" , ';
+		}
+		$field_values = substr($field_values, 0, strlen($field_values)-2);
+
+		$this->sqlQuery='UPDATE ' . $table . ' SET ' . $field_values . ' WHERE id = "' . $id . '"';
+		$this->SqlExecute();
+
+		return TRUE;
+	}
+	
+	function SqlUpdateHtml($id, $info, $table)
+	{
+		$id = $this->SqlPrepareHtml($id);
+		$table = $this->SqlPrepareHtml($table);
+
+		$field_values = '';
+
+		foreach ($info as $info_id => $info_value)
+		{
+			$info_id = $this->SqlPrepareHtml($info_id);
+			$info_value = $this->SqlPrepareHtml($info_value);
+			$field_values .= $info_id . '= "' . $info_value . '" , ';
+		}
+		$field_values = substr($field_values, 0, strlen($field_values)-2);
+
+		$this->sqlQuery='UPDATE ' . $table . ' SET ' . $field_values . ' WHERE id = "' . $id . '"';
+		$this->SqlExecute();
+
+		return TRUE;
+	}
+
+	function SqlUpdatePartObjects($oldPart, $part, $table)
+	{
+		$oldPart = $this->SqlPrepare($oldPart);
+		$part = $this->SqlPrepare($part);
+		$table = $this->SqlPrepare($table);
+		$this->sqlQuery='UPDATE ' . $table . ' SET part=' . $part . ' WHERE part = "' . $oldPart . '"';
+		$this->SqlExecute();
+		return TRUE;
+	}
+
+	function SqlUpdateSectObjects($oldSect, $sect, $table)
+	{
+		$oldSect = $this->SqlPrepare($oldSect);
+		$sect = $this->SqlPrepare($sect);
+		$table = $this->SqlPrepare($table);
+		$this->sqlQuery='UPDATE ' . $table . ' SET sect=' . $sect . ' WHERE sect = "' . $oldSect . '"';
+		$this->SqlExecute();
+		return TRUE;
+	}
+	
+//Удаление поля
+	function SqlDel($id, $table)
+	{
+		$id = $this->SqlPrepare($id);
+		$table = $this->SqlPrepare($table);
+		
+		$this->sqlQuery = 'DELETE FROM ' . $table . ' WHERE id = "' . $id . '"';
+		$this->SqlExecute();
+
+		return TRUE;
+	}
+//Удаление комментариев при удалении поля
+	function SqlDelComments($id, $table)
+	{
+		$id = $this->SqlPrepare($id);
+		$table = $this->SqlPrepare($table);
+		
+		$this->sqlQuery = 'DELETE FROM ' . $table . ' WHERE item = "' . $id . '"';
+		$this->SqlExecute();
+
+		return TRUE;
+	}
+
+//Получение предыдущего и следующего элемента
+    function SqlGetPrev($id, $array)
+    {
+		reset($array);
+		while ($value = current($array)) {
+			if (key($array) == $id) {
+				$prev = prev($array);
+				return $prev['id'];
+			}
+			next($array);
+		}	  
+		return FALSE;
+	}	
+
+    function SqlGetNext($id, $array)
+    {
+		reset($array);
+		while ($value = current($array)) {
+			if (key($array) == $id) {
+				$next = next($array);
+				return $next['id'];
+			}
+			next($array);
+		}	  
+		return FALSE;
+    }
+}
+?>

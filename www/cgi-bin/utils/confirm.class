@@ -1,0 +1,34 @@
+<?php
+/***********************************************
+-=Ms Site=-
+
+Автор:    Миропольский Михаил <ms@ensk.ru>
+Описание: Класс картинки подтверждения
+***********************************************/
+
+class Confirm
+{
+	function ConfirmGenerateImage($code)
+	{
+		$diagramWidth = 40;
+		$diagramHeight = 15;
+
+		$image = imageCreateTrueColor ($diagramWidth, $diagramHeight);
+
+		$imagebg = imageCreateFromPNG ('images/confirm.png'); // transparent PNG
+	   	$imagebg = imagerotate ( $imagebg, rand(0, 360), "");
+
+		imageSetTile ($image, $imagebg);
+		imageFilledRectangle ($image, 0, 0, $diagramWidth, $diagramHeight, IMG_COLOR_TILED);
+
+		$textcolor = imageColorAllocate ($image, 0, 0, 0);
+		imageString ($image, 5, 3, 0, $code, $textcolor);
+
+		Header("Content-type: image/png");
+		imagePNG ($image);
+
+		imagedestroy ($image);
+		imagedestroy ($imagebg);
+	}
+}
+?>

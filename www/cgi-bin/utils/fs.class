@@ -1,0 +1,141 @@
+<?php
+/***********************************************
+-=Ms Site=-
+
+Автор:    Миропольский Михаил <ms@ensk.ru>
+Описание: Класс для работы с файловой системой.
+***********************************************/
+
+class Fs
+{
+	function FsDie()
+	{
+		exit('Произошла внутренняя ошибка. Нет доступа к файлу.');
+	}
+
+	function FsCreate($path)
+	{
+		if ( !is_file($path) )
+		{
+			$result = @fopen($path, 'w');
+			if (!$result) $this->FsDie();
+			fclose($result);
+
+			return $result;
+		}
+		return TRUE;
+	}
+
+	function FsWrite($path, $data, $mode)
+	{
+		$handle = fopen($path, $mode);
+		if (!$handle) $this->FsDie();
+
+		$result = fwrite($handle, $data);
+		if (!$result) $this->FsDie();
+
+		fclose($handle);
+
+		return $result;
+	}
+
+	function FsRead($path)
+	{
+		$handle = fopen($path, 'r');
+		if (!$handle) $this->FsDie();
+
+	    if ( filesize($path) > 0 )
+	    {
+		  $contents = fread( $handle, filesize($path) );
+		}
+		else $contents = '';
+		fclose($handle);
+
+		return $contents;
+	}
+	
+	function FsCopy($from, $to)
+	{
+		$content = $this->FsRead($from);
+		$this->FsCreate($to);
+
+		return $this->FsWrite($to, $content, 'w');
+	}
+	
+	function FsMove($from, $to)
+	{
+		$content = $this->FsRead($from);
+		unlink($from);
+		$this->FsCreate($to);
+
+		return $this->FsWrite($to, $content, 'w');
+	}
+
+	function FsReadRemote($path)
+	{
+		$handle = fopen($path, 'r');
+		if (!$handle) $this->FsDie();
+
+		$content='';
+		while (TRUE)
+		{
+			$contents = fread($handle, 4096);
+		    if (strlen($contents) == 0) break;
+		    $content .= $contents;
+		}
+		fclose($handle);
+
+		return $content;
+	}
+
+	function FsReadDir($dir)
+	{
+		$dh  = @opendir($dir);
+		if (!$dh) $this->FsDie();
+
+		while ( false !== ( $filename = readdir($dh) ) ) $files[] = $filename;
+		sort($files);
+
+		return $files;
+	}
+	
+//converters
+	function FsUploadConvert2Array($upload)
+	{
+		$i = 0;
+		foreach ($upload as $key => $upload_info)
+		{
+			$array[$i]['content'] = $this->FsRead($upload_info['tmp_name']);
+			$array[$i]['name'] = $upload_info['name'];
+			$array[$i]['type'] = $upload_info['type'];
+			$i++;
+		}
+		return $array;
+	}
+
+	function FsConvert2Array($fileName, $path)
+	{
+		$file_info['name'] = $fileName;
+		$file_info['content'] = $this->FsRead($path . $fileName);
+		$file_info['type'] = '';
+		return $file_info;
+	}
+	
+    function FsGetType($path)
+    {
+      //читаем сигнатуру (3 байта)
+      $img_file = fopen($path, 'rb');
+      if (!$img_file) $this->FsDie();
+
+      flock($img_file, 1);
+      $img_sign=fread($img_file, 3);
+      flock($img_file, 3);
+      fclose($img_file);
+
+      //проверяем сигнатуру, определяем тип файла
+      if (strcmp($img_sign, chr(0x47).chr(0x49).chr(0x46))==0) return 'gif';
+      elseif (strcmp($img_sign, chr(0x89).chr(0x50).chr(0x4E))==0) return 'png';
+      elseif (strcmp($img_sign, chr(0xFF).chr(0xD8).chr(0xFF))==0) return 'jpg';
+      else return FALSE;
+    }
+}

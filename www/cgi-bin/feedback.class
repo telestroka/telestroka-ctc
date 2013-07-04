@@ -1,0 +1,32 @@
+<?php
+/***********************************************
+-=Ms Site=-
+
+Модуль: Feedback
+Автор: Миропольский Михаил <ms@ensk.ru>
+Описание: Класс обратной связи
+***********************************************/
+require_once('utils/sql.class');
+
+class Feedback extends Sql
+{
+	//конструктор
+	function Feedback()
+	{
+		$this->SqlConnect();
+
+		$this->sqlQuery = 'CREATE TABLE IF NOT EXISTS feedback_items (
+															  id int(11) NOT NULL auto_increment,
+															  text text NOT NULL,
+															  answer text NOT NULL,
+															  name varchar(255) NOT NULL default "",
+															  email varchar(255) NOT NULL default "",
+															  city varchar(255) NOT NULL default "",
+															  company varchar(255) NOT NULL default "",
+															  PRIMARY KEY id (id)
+														   ) TYPE=MyISAM;';
+		$this->SqlExecute();
+		return TRUE;
+	}
+}
+?>

@@ -1,0 +1,15 @@
+AddType text/x-component .htc
+AddType application/x-httpd-php .inc
+AddHandler application/x-httpd-php .inc
+ErrorDocument 404 /index.php
+php_flag display_errors On
+php_flag magic_quotes_gpc off
+
+<FilesMatch "\.(inc|tpl|ini)$">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+RewriteEngine on
+RewriteBase /
+RewriteRule ^rss/*$ rss.php

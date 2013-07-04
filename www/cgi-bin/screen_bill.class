@@ -1,0 +1,63 @@
+<?php
+/***********************************************
+-=Ms Site=-
+
+Модуль: Screen Bill
+Автор: Миропольский Михаил <ms@ensk.ru>
+Имя файла: screen_bill.class
+Дата создания: 25.04.2006
+Описание: Класс счетов
+***********************************************/
+require_once('utils/sql.class');
+
+class ScreenBill extends Sql
+{
+
+	//конструктор
+	function ScreenBill()
+	{
+		$this->SqlConnect();
+
+		$this->sqlQuery = 'CREATE TABLE IF NOT EXISTS screen_bills(  id bigint(20) NOT NULL auto_increment,
+                                                              sid varchar(255) NOT NULL default "",
+															  date date NOT NULL default "0000-00-00",
+															  login varchar(255) NOT NULL default "",
+															  screen varchar(255) NOT NULL default "",
+															  num varchar(255) NOT NULL default "",
+															  summa varchar(255) NOT NULL default "",
+															  pay_date date NOT NULL default "0000-00-00",
+															  text text NOT NULL,
+															  animate varchar(255) NOT NULL default "",
+															  PRIMARY KEY id (id)
+						  									) TYPE=MyISAM;';
+		$this->SqlExecute();
+		return TRUE;
+	}
+
+    function ScreenBillGetBillInfo($sid)
+    {
+		$sid = $this->SqlPrepare($sid);
+		$info = array();
+		$this->sqlQuery = 'select * from screen_bills where sid="' . $sid . '"';
+		$this->SqlExecute();
+        while ($row = mysql_fetch_array($this->sqlRes))
+        {
+            $info = $row;
+        }
+		return $info;
+    }
+/*
+	function Screen_billGetUserScreen_bills($user)
+	{
+		$user = $this->SqlPrepare($user);
+		$info = array();
+		$this->sqlQuery = 'select * from screen_bills where login="' . $user . '"';
+		$this->SqlExecute();
+        while ($row = mysql_fetch_array($this->sqlRes))
+        {
+            $info[$row['id']] = $row;
+        }
+		return $info;
+	}*/
+}
+?>

@@ -1,0 +1,175 @@
+<?php
+/***********************************************
+-=Ms Site=-
+
+Модуль: Smi
+Автор: Миропольский Михаил <ms@ensk.ru>
+Описание: Класс сми
+***********************************************/
+require_once('utils/sql.class');
+
+class Smi extends Sql
+{
+	//конструктор
+	function Smi()
+	{
+		$this->SqlConnect();
+
+		$this->sqlQuery = 'CREATE TABLE IF NOT EXISTS smi_items (
+															  id int(11) NOT NULL auto_increment,
+															  name varchar(255) NOT NULL default "",
+															  title varchar(255) NOT NULL default "",
+															  cat varchar(255) NOT NULL default "",
+															  sect varchar(255) NOT NULL default "",
+															  part varchar(255) NOT NULL default "",
+															  slogan varchar(255) NOT NULL default "",
+	  														  circulation varchar(255) NOT NULL default "",
+	  														  pages varchar(255) NOT NULL default "",
+	  														  format varchar(255) NOT NULL default "",
+	  														  publish_day varchar(255) NOT NULL default "",
+	  														  territory text NOT NULL,
+	  														  regions text NOT NULL,
+	  														  distribute_way text NOT NULL,
+	  														  info text NOT NULL,
+															  price_list text NOT NULL,
+															  rubriks text NOT NULL,
+	  														  discount_portal varchar(255) NOT NULL default "",
+															  discount_nums text NOT NULL,
+	  														  discount_agency varchar(255) NOT NULL default "",
+	  														  discount_markup varchar(255) NOT NULL default "",
+	  														  markup_cities text NOT NULL,
+															  date date NOT NULL default "0000-00-00",
+															  rate float NOT NULL default "0",
+															  PRIMARY KEY id (id)
+														   ) TYPE=MyISAM;';
+		$this->SqlExecute();
+
+		$this->sqlQuery = 'CREATE TABLE IF NOT EXISTS smi_cats (
+															  id int(11) NOT NULL auto_increment,
+															  title varchar(255) NOT NULL default "",
+															  text text NOT NULL,
+															  sect varchar(255) NOT NULL default "",
+															  part varchar(255) NOT NULL default "",
+															  image varchar(255) NOT NULL default "",
+															  PRIMARY KEY id (id)
+														   ) TYPE=MyISAM;';
+		$this->SqlExecute();
+
+		$this->sqlQuery = 'CREATE TABLE IF NOT EXISTS smi_sects (
+															  id int(11) NOT NULL auto_increment,
+															  title varchar(255) NOT NULL default "",
+															  text text NOT NULL,
+															  part varchar(255) NOT NULL default "",
+															  image varchar(255) NOT NULL default "",
+															  PRIMARY KEY id (id)
+														   ) TYPE=MyISAM;';
+		$this->SqlExecute();
+
+		$this->sqlQuery = 'CREATE TABLE IF NOT EXISTS smi_parts (
+															  id int(11) NOT NULL auto_increment,
+															  title varchar(255) NOT NULL default "",
+															  text text NOT NULL,
+															  image varchar(255) NOT NULL default "",
+															  PRIMARY KEY id (id)
+														   ) TYPE=MyISAM;';
+		$this->SqlExecute();
+		
+		return TRUE;
+	}
+
+	function SmiGetCities()
+	{
+		$cities_info = array();
+		$this->sqlQuery = 'select * from smi where city = ""';
+		$this->SqlExecute();
+        while ($row = mysql_fetch_array($this->sqlRes))
+        {
+            $cities_info[$row['id']] = $row;
+        }
+		return $cities_info;
+	}
+	
+	function SmiIsCity($id)
+	{
+		$id = $this->SqlPrepare($id);
+		$this->sqlQuery = 'select id from smi where id = "' . $id . '" and city = ""';
+		$this->SqlExecute();
+		return mysql_num_rows($this->sqlRes) ? TRUE : FALSE;
+	}
+
+	function SmiIsSect($id)
+	{
+		$id = $this->SqlPrepare($id);
+		$this->sqlQuery = 'select id from smi where id = "' . $id . '" and city != "" and cat="" and sect=""';
+		$this->SqlExecute();
+		return mysql_num_rows($this->sqlRes) ? TRUE : FALSE;
+	}
+  
+	function SmiGetCityItems($id)
+	{
+		$id = $this->SqlPrepare($id);
+
+		$items_info = array();
+		$this->sqlQuery = 'select * from smi where city = "' . $id . '" and cat!="" order by id';
+		$this->SqlExecute();
+        while ($row = mysql_fetch_array($this->sqlRes))
+        {
+            $items_info[$row['id']] = $row;
+        }
+		return $items_info;
+	}
+	
+	function SmiGetCityCats($city)
+	{
+		$city = $this->SqlPrepare($city);
+		$cats_info = array();
+		$this->sqlQuery = 'select * from smi where cat = "" and sect != "" and city = "' . $city . '" order by id';
+		$this->SqlExecute();
+        while ($row = mysql_fetch_array($this->sqlRes))
+        {
+            $cats_info[$row['id']] = $row;
+        }
+		return $cats_info;
+	}
+
+	function SmiGetCitySects($city)
+	{
+		$city = $this->SqlPrepare($city);
+		$sects_info = array();
+		$this->sqlQuery = 'select * from smi where cat = "" and sect = "" and city = "' . $city . '" order by id';
+		$this->SqlExecute();
+        while ($row = mysql_fetch_array($this->sqlRes))
+        {
+            $sects_info[$row['id']] = $row;
+        }
+		return $sects_info;
+	}
+
+	function SmiGetPartLeaders($part)
+	{
+		$part = $this->SqlPrepare($part);
+		$leaders_info = array();
+		$this->sqlQuery = 'select id,title,rate from smi_items where part = "' . $part . '" and rate > 100 order by rate desc LIMIT 0,3';
+		$this->SqlExecute();
+        while ($row = mysql_fetch_array($this->sqlRes))
+        {
+            $leaders_info[$row['id']] = $row;
+        }
+		return $leaders_info;
+	}
+	
+	//Информация о рубриках
+	function SmiGetCatCirculationObjects($id)
+	{
+		$id = $this->SqlPrepare($id);
+		$items_info = array();
+		$this->sqlQuery = 'select * from smi_items where cat = "' . $id . '" order by circulation+0 desc';
+		$this->SqlExecute();
+	    while ($row = mysql_fetch_array($this->sqlRes))
+	    {
+	        $items_info[$row['id']] = $row;
+	    }
+		return $items_info;
+	}
+}
+?>
