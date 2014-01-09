@@ -1,0 +1,88 @@
+@import "mixins.less";
+@import "reset.less";
+@import "classes.less";
+
+@blue-text: #438dcc;
+@orange-text: #f26522;
+@text-color: #626262;
+@text-size: 13px;
+@text-font: Arial, sans-serif;
+@site-background: #fff;
+@link-color: @blue-text;
+@link-visited-color: @blue-text;
+@link-hover-color: @orange-text;
+@container-width: 860px;
+
+a {color: @link-color; transition: color 2s;}
+a:hover {color: @link-hover-color; transition: color 0.5s;}
+body {
+  overflow-x: hidden;
+  color: @text-color;
+
+  header {
+	background-color: #fcb701;
+	padding: 30px 0 75px;
+
+	.container {
+	  margin: auto;
+	  max-width: @container-width;
+	  padding: 0 10px;
+
+	  img {display: block;}
+	  #logo {float: right;}
+	  #channel-logo {max-width: 506px; width: 50%;}
+	  h1 {
+		display: block;
+		float: right;
+		color: #fff;
+		font-size: 27px;
+		font-weight: normal;
+		text-shadow: 0 1px 0 #000;
+	  }
+	}
+  }
+
+  #top-panel {
+    background: #fca601 url(/i/top-panel-bg.gif) repeat-x;
+	height: 25px;
+  }
+  section {
+	margin: auto;
+	max-width: @container-width;
+	padding: 0 10px;
+
+	.floatleft {
+	  width: 50%;
+	}
+	.floatright {
+	  width: 30%;
+	}
+	h2 {
+	  font-size: 18px;
+	  font-weight: normal;
+	  color: @orange-text;
+	  margin: 90px 0 20px;
+	}
+	.large-link-list {
+	  font-size: 18px;
+
+	  a {
+		margin-right: 10px;
+	  }
+	}
+	.channels-image {
+	  margin: 60px -60px 0;
+
+	  img {
+		width: 100%;
+		max-width: 982px;
+	  }
+	}
+  }
+  footer {
+	margin: auto;
+	max-width: @container-width;
+	padding: 0 10px;
+  }
+  #counter {}
+}
