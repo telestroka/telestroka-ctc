@@ -10,5 +10,7 @@
 			$i++;
 
 		}
-	}
+	}	
 ?>
+<br><br>
+<a href="/admin/orders.php">Заказы</a>

@@ -32,13 +32,13 @@
 </script>
 
 <div style="min-height: 80px">
-	<div class="electrotext-title">Сентябрь 2012. Объявления в эфире: </div>
+	<div class="electrotext-title">Осень' 2013. Объявления в эфире: </div>
 	<div id="electrotext-content"></div>
 </div>	
 	
 <div class="electrotext-more">
 	<a href="/notes/tags.php?tag=%C2%E0%EA%E0%ED%F1%E8%E8">Вакансии</a>
 	<a href="/notes/tags.php?tag=%D1%F0%EE%F7%ED%EE%21">Срочно в эфир!</a>
-	<a href="/notes/tags.php?tag=Тр. — бесплатно!">Тр. — бесплатно!</a>
+	<a href="/notes/tags.php?tag=%D2%F0%E5%E1%F3%FE%F2%F1%FF%20%97%20%E1%E5%F1%EF%EB%E0%F2%ED%EE!">Требуются — бесплатно!</a>
 	<a href="/notes/tags.php?tag=Скидка+50%" style="color: #F26522">Со&nbsp;скидкой&nbsp;50%</a>
 </div>

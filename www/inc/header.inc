@@ -21,13 +21,14 @@
 		<tr>
 			<td width="400"><img src="/images/design/header-logo.png" alt="" class="header-logo"></td>
 			<td class="header-content">
-				<h1>Бегущая строка на СТС — реклама по-быстрому</h1>
+				<h1>Бегущая строка на СТС — реклама по-быстрому</h1><br>
 				<h2>Уже завтра, <?=date("j ", $tomorrow) . ' ' . $dateMonthesOf[date("n", $tomorrow)];?>, ваше объявление может быть в эфире!</h2>
-				<p>
+			<br><br>
+			<!--	<p>
 					Нужна помощь?&nbsp;— <a href="<?=$site->PAGES['feedback']['url'];?>#form" style="font-size: 16px;">обратитесь к&nbsp;Анастасии&nbsp;Евгеньевне</a>,  
 					главному специалисту, или&nbsp;позвоните
 					<strong>(383) 249-52-39</strong>
-				</p>
+				</p>-->
 				<? include_once($site->PATH_INC . '/menu.inc'); ?>
 			</td>
 		</tr>

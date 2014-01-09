@@ -202,6 +202,8 @@
 Коммерческая: ' . (($order_type) ? 'да' : 'нет') . '
 Дублировать в интернет-архиве: ' . $order_duplicate;
 
+file_put_contents($site->PATH_DATA . '/orders.txt', "Дата: " . date('d.m.Y') . $message . "\n=====", FILE_APPEND);
+
             $mail->MailMailer($site->EMAIL_OWNER, 'Zakaz strochnoy reklamy na CTC ', $message);
 
            $site->SiteGoTo($site->PAGES['string_ok']['url'] . '?part=' . $smi_part);
